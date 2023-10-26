@@ -37,13 +37,13 @@ func CameraMovement(camera *rl.Camera3D, velocity float32){
 	if(rl.IsKeyDown(rl.KeyS)){
 		rl.UpdateCameraPro(camera, rl.Vector3Zero(), rl.NewVector3(0,velocity*10,0), 0)
 	}
+
 }
 
 func main() {
-	screenWidth := int32(800)
-	screenHeight := int32(450)
+	screenSize := rl.NewVector2(1280,720)
 
-	rl.InitWindow(screenWidth, screenHeight, "Guitar Go!")
+	rl.InitWindow(int32(screenSize.X), int32(screenSize.Y), "Guitar Go!")
 
 	camera := rl.Camera{}
 	camera.Position = rl.NewVector3(0,10,10)
@@ -51,16 +51,15 @@ func main() {
 	camera.Fovy = 45
 
 	rl.SetTargetFPS(60)
-	model := rl.LoadModel("./garrafa.obj")
+	model := rl.LoadModel("./models/garrafa.obj")
 	
 
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
-		rl.ClearBackground(rl.SkyBlue)
+		rl.ClearBackground(rl.Gray)
 
-		CameraMovement(&camera, 0.1)
+		CameraMovement(&camera, 0.2)
 		rl.BeginMode3D(camera)
-
 
 		rl.DrawGrid(16,5)
 		rl.DrawModel(model, rl.NewVector3(0,0,0), 1, rl.White)
