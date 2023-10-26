@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -41,33 +43,36 @@ func CameraMovement(camera *rl.Camera3D, velocity float32){
 }
 
 func main() {
-	screenSize := rl.NewVector2(1280,720)
+	screenWidth := int32(1280)
+	screenHeight := int32(720)
 
-	rl.InitWindow(int32(screenSize.X), int32(screenSize.Y), "Guitar Go!")
+	rl.InitWindow(screenWidth, screenHeight, "Garrafa")
+	rl.SetTargetFPS(60)
 
 	camera := rl.Camera{}
-	camera.Position = rl.NewVector3(0,10,10)
+	camera.Position = rl.NewVector3(0,7,12)
 	camera.Up = rl.NewVector3(0, 1, 0)
 	camera.Fovy = 45
 
-	rl.SetTargetFPS(60)
 	model := rl.LoadModel("./models/garrafa.obj")
-	
 
 	for !rl.WindowShouldClose() {
+		CameraMovement(&camera, 0.2)
+
 		rl.BeginDrawing()
+
 		rl.ClearBackground(rl.Gray)
 
-		CameraMovement(&camera, 0.2)
 		rl.BeginMode3D(camera)
 
-		rl.DrawGrid(16,5)
-		rl.DrawModel(model, rl.NewVector3(0,0,0), 1, rl.White)
+		rl.DrawModel(model, rl.NewVector3(0, 0, 0), 1, rl.White)
 
+		rl.DrawGrid(10, 1.0) // Draw a grid
 		rl.EndMode3D()
-
+		rl.DrawText(fmt.Sprintf("[%.2f, %.2f, %.2f]", camera.Position.X, camera.Position.Y, camera.Position.Z), 10, 20, 20, rl.Black)
 		rl.EndDrawing()
 	}
 
+	rl.UnloadModel(model)  // Unload model
 	rl.CloseWindow()
 }
