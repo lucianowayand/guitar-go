@@ -2,6 +2,7 @@ package main
 
 import (
 	"image/color"
+	"time"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
@@ -39,7 +40,6 @@ func CameraMovement(camera *rl.Camera3D, velocity float32){
 	if(rl.IsKeyDown(rl.KeyS)){
 		rl.UpdateCameraPro(camera, rl.Vector3Zero(), rl.NewVector3(0,velocity*10,0), 0)
 	}
-
 }
 
 func DrawTracks(){
@@ -55,16 +55,25 @@ func DrawTracks(){
 	rl.DrawCube(rl.NewVector3(2.5,0.05,0), 0.05, 0.5, 20, rl.White)
 }
 
-func DrawDisk(lane int){
+func DrawDisk(lane int, position float32){
+	// -10 - Disk spawn position
+	// 6 - Disk perfect position
+	// 10 - Disk destroy position
+
 	colors := []color.RGBA{rl.Green, rl.Red, rl.Yellow, rl.Blue, rl.Orange}
-	rl.DrawSphere(rl.NewVector3(float32(-2+lane),0.1,0), 0.4, colors[lane])
+	rl.DrawSphere(rl.NewVector3(float32(-2+lane),0.1,position), 0.4, colors[lane])
+}
+
+type Note struct {
+	Position float32
+	Lane int
 }
 
 func main() {
 	screenWidth := int32(1280)
 	screenHeight := int32(720)
 
-	rl.InitWindow(screenWidth, screenHeight, "raylib [shaders] example - basic lighting")
+	rl.InitWindow(screenWidth, screenHeight, "Guitar Go!")
 	rl.SetConfigFlags(rl.FlagMsaa4xHint) //ENABLE 4X MSAA IF AVAILABLE
 	rl.SetTargetFPS(60)
 
@@ -73,21 +82,40 @@ func main() {
 	camera.Up = rl.NewVector3(0, 1, 0)
 	camera.Fovy = 45
 
+	notes := []Note{
+		{Position: -10, Lane: 0},
+		{Position: -10, Lane: 1},
+		{Position: -10, Lane: 2},
+		{Position: -10, Lane: 3},
+		{Position: -10, Lane: 4},
+	}
+
+	ticker := time.NewTicker(10 * time.Millisecond)
+	go func() {
+		for range ticker.C {
+			for i := range notes{
+				notes[i].Position += 0.06
+			}
+		}
+	}()
+
 	for !rl.WindowShouldClose() {
 		CameraMovement(&camera, 0.2)
 
 		rl.BeginDrawing()
 		rl.BeginMode3D(camera)
-		rl.ClearBackground(rl.Gray)
+		rl.ClearBackground(rl.SkyBlue)
 
 		DrawTracks()
-		DrawDisk(0)
-		DrawDisk(1)
-		DrawDisk(2)
-		DrawDisk(3)
-		DrawDisk(4)
 
+		for _, note := range notes{
+			if note.Position <= 10 {
+				DrawDisk(note.Lane, note.Position)
+			}
+		}
+		
 		rl.EndMode3D()
+		rl.DrawFPS(10,10)
 		rl.EndDrawing()
 	}
 
