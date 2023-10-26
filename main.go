@@ -1,6 +1,8 @@
 package main
 
 import (
+	"image/color"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -37,36 +39,55 @@ func CameraMovement(camera *rl.Camera3D, velocity float32){
 	if(rl.IsKeyDown(rl.KeyS)){
 		rl.UpdateCameraPro(camera, rl.Vector3Zero(), rl.NewVector3(0,velocity*10,0), 0)
 	}
+
+}
+
+func DrawTracks(){
+	// Track
+	rl.DrawCube(rl.NewVector3(0,0,0), 5, 0.5, 20, rl.DarkGray)
+
+	// Lanes
+	rl.DrawCube(rl.NewVector3(-2.5,0.05,0), 0.05, 0.5, 20, rl.White)
+	rl.DrawCube(rl.NewVector3(-1.5,0.05,0), 0.05, 0.5, 20, rl.White)
+	rl.DrawCube(rl.NewVector3(-0.5,0.05,0), 0.05, 0.5, 20, rl.White)
+	rl.DrawCube(rl.NewVector3(0.5,0.05,0), 0.05, 0.5, 20, rl.White)
+	rl.DrawCube(rl.NewVector3(1.5,0.05,0), 0.05, 0.5, 20, rl.White)
+	rl.DrawCube(rl.NewVector3(2.5,0.05,0), 0.05, 0.5, 20, rl.White)
+}
+
+func DrawDisk(lane int){
+	colors := []color.RGBA{rl.Green, rl.Red, rl.Yellow, rl.Blue, rl.Orange}
+	rl.DrawSphere(rl.NewVector3(float32(-2+lane),0.1,0), 0.4, colors[lane])
 }
 
 func main() {
-	screenWidth := int32(800)
-	screenHeight := int32(450)
+	screenWidth := int32(1280)
+	screenHeight := int32(720)
 
-	rl.InitWindow(screenWidth, screenHeight, "Guitar Go!")
+	rl.InitWindow(screenWidth, screenHeight, "raylib [shaders] example - basic lighting")
+	rl.SetConfigFlags(rl.FlagMsaa4xHint) //ENABLE 4X MSAA IF AVAILABLE
+	rl.SetTargetFPS(60)
 
 	camera := rl.Camera{}
-	camera.Position = rl.NewVector3(0,10,10)
+	camera.Position = rl.NewVector3(0,7,12)
 	camera.Up = rl.NewVector3(0, 1, 0)
 	camera.Fovy = 45
 
-	rl.SetTargetFPS(60)
-	model := rl.LoadModel("./garrafa.obj")
-	
-
 	for !rl.WindowShouldClose() {
+		CameraMovement(&camera, 0.2)
+
 		rl.BeginDrawing()
-		rl.ClearBackground(rl.SkyBlue)
-
-		CameraMovement(&camera, 0.1)
 		rl.BeginMode3D(camera)
+		rl.ClearBackground(rl.Gray)
 
-
-		rl.DrawGrid(16,5)
-		rl.DrawModel(model, rl.NewVector3(0,0,0), 1, rl.White)
+		DrawTracks()
+		DrawDisk(0)
+		DrawDisk(1)
+		DrawDisk(2)
+		DrawDisk(3)
+		DrawDisk(4)
 
 		rl.EndMode3D()
-
 		rl.EndDrawing()
 	}
 
