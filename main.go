@@ -83,6 +83,30 @@ func main() {
 	camera.Fovy = 45
 
 	song := [][]Note{
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
 		{
 			{Position: -10, Lane: 0},
 		},
@@ -98,6 +122,10 @@ func main() {
 		{
 			{Position: -10, Lane: 4},
 		},
+		{},
+		{},
+		{},
+		{},
 		{
 			{Position: -10, Lane: 0},
 			{Position: -10, Lane: 2},
@@ -116,6 +144,30 @@ func main() {
 			{Position: -10, Lane: 3},
 			{Position: -10, Lane: 4},
 		},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
+		{},
 	}
 
 	currentChord := 0
@@ -155,9 +207,13 @@ func main() {
 				}
 			}
 		}
-
 		rl.EndMode3D()
+
 		rl.DrawFPS(10,10)
+		if len(song) < currentChord {
+			rl.DrawText("GAME OVER", (screenWidth/2) - 120 , 20, 40, rl.White)
+		}
+
 		rl.EndDrawing()
 	}
 
