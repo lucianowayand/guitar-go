@@ -82,25 +82,65 @@ func main() {
 	camera.Up = rl.NewVector3(0, 1, 0)
 	camera.Fovy = 45
 
-	notes := []Note{
-		{Position: -10, Lane: 0},
-		{Position: -10, Lane: 1},
-		{Position: -10, Lane: 2},
-		{Position: -10, Lane: 3},
-		{Position: -10, Lane: 4},
+	song := [][]Note{
+		{
+			{Position: -10, Lane: 0},
+		},
+		{
+			{Position: -10, Lane: 1},
+		},
+		{
+			{Position: -10, Lane: 2},
+		},
+		{
+			{Position: -10, Lane: 3},
+		},
+		{
+			{Position: -10, Lane: 4},
+		},
+		{
+			{Position: -10, Lane: 0},
+			{Position: -10, Lane: 2},
+			{Position: -10, Lane: 4},
+		},
+		{},
+		{
+			{Position: -10, Lane: 1},
+			{Position: -10, Lane: 3},
+		},
+		{},
+		{
+			{Position: -10, Lane: 0},
+			{Position: -10, Lane: 1},
+			{Position: -10, Lane: 2},
+			{Position: -10, Lane: 3},
+			{Position: -10, Lane: 4},
+		},
 	}
 
+	currentChord := 0
 	ticker := time.NewTicker(10 * time.Millisecond)
 	go func() {
 		for range ticker.C {
-			for i := range notes{
-				notes[i].Position += 0.06
+			for i := range song{
+				for j := range song[i]{
+					if i < currentChord{
+						song[i][j].Position += 0.1
+					}
+				}
 			}
 		}
 	}()
 
+	timer := time.NewTicker(100 * time.Millisecond)
+	go func() {
+		for range timer.C {
+			currentChord += 1
+		}
+	}()
+
 	for !rl.WindowShouldClose() {
-		CameraMovement(&camera, 0.2)
+		// CameraMovement(&camera, 0.2)
 
 		rl.BeginDrawing()
 		rl.BeginMode3D(camera)
@@ -108,12 +148,14 @@ func main() {
 
 		DrawTracks()
 
-		for _, note := range notes{
-			if note.Position <= 10 {
-				DrawDisk(note.Lane, note.Position)
+		for i := range song{
+			if i < currentChord{
+				for j := range song[i]{
+					DrawDisk(song[i][j].Lane, song[i][j].Position)
+				}
 			}
 		}
-		
+
 		rl.EndMode3D()
 		rl.DrawFPS(10,10)
 		rl.EndDrawing()
