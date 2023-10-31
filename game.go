@@ -1,4 +1,4 @@
-package game
+package main
 
 import (
 	"bufio"
@@ -24,10 +24,13 @@ func ReadSongFromFile(path string) [][]Note{
 	notes := [][]Note{} 
 
     for scanner.Scan() {
-       strNotes := strings.Split(scanner.Text(), "")
+       strNotes := strings.Split(scanner.Text(), " ")
 	   
 	   elements := []Note{}
 	   for _, strNote := range strNotes {
+			if strNote == "" {
+				continue
+			}
 			i, err := strconv.Atoi(strNote)
 			if err != nil {
 				panic(err)
@@ -46,7 +49,7 @@ func ReadSongFromFile(path string) [][]Note{
 
 func DrawTracks(){
 	// Track
-	rl.DrawCube(rl.NewVector3(0,0,0), 5, 0.5, 20, rl.DarkGray)
+	rl.DrawCube(rl.NewVector3(0,0,0), 5, 0.5, 20, rl.ColorFromNormalized(rl.NewVector4(0.35,0.35,0.35,1)))
 
 	// Lanes
 	rl.DrawCube(rl.NewVector3(-2.5,0.05,0), 0.05, 0.5, 20, rl.White)
@@ -66,18 +69,57 @@ func DrawDisk(lane int, position float32){
 	rl.DrawSphere(rl.NewVector3(float32(-2+lane),0.1,position), 0.4, colors[lane])
 }
 
+func DrawMarker(lane int, song [][]Note, score *int){
+	colors := []color.RGBA{rl.Green, rl.Red, rl.Yellow, rl.Blue, rl.Orange}
+	var color color.RGBA
+	
+	keys := []int32{rl.KeyQ, rl.KeyW, rl.KeyE, rl.KeyR, rl.KeyT}
+	height := 0.5
+
+	if rl.IsKeyPressed(keys[lane]){
+		height = 0.6
+		color = colors[lane]
+		foundNote := false
+
+		for i := range song{
+			for j := range song[i]{
+				if song[i][j].Position > 5.5 && song[i][j].Position < 6.5 && song[i][j].Lane == lane && !song[i][j].Pressed{
+					song[i][j].Pressed = true
+					*score += 1
+					foundNote = true
+				}
+			}
+		}
+		if !foundNote{
+			*score -= 1
+		}
+
+	} else {
+		height = 0.5
+		color = rl.DarkGray
+	}
+
+	rl.DrawCylinder(rl.NewVector3(float32(-2+lane),-0.25,6.5), 0.4, 0.4, 0.5, 12, rl.Gray)
+	rl.DrawCylinder(rl.NewVector3(float32(-2+lane),-0.2,6.5), 0.3, 0.3, float32(height), 12, color)
+}
+
 type Note struct {
 	Position float32
 	Lane int
+	Pressed bool
 }
 
-func Play(songPath string, velocity time.Duration) {
+func Setup() {
 	screenWidth := int32(1280)
 	screenHeight := int32(720)
 
 	rl.InitWindow(screenWidth, screenHeight, "Guitar Go!")
 	rl.SetConfigFlags(rl.FlagMsaa4xHint) //ENABLE 4X MSAA IF AVAILABLE
 	rl.SetTargetFPS(60)
+}
+
+func PlayingScreen(songPath string, velocity time.Duration, state *State) {
+	score := 0
 
 	camera := rl.Camera{}
 	camera.Position = rl.NewVector3(0,7,12)
@@ -113,25 +155,42 @@ func Play(songPath string, velocity time.Duration) {
 		rl.ClearBackground(rl.SkyBlue)
 
 		DrawTracks()
+		DrawMarker(0, song, &score)
+		DrawMarker(1, song, &score)
+		DrawMarker(2, song, &score)
+		DrawMarker(3, song, &score)
+		DrawMarker(4, song, &score)
 
 		for i := range song{
 			if i < currentChord{
 				for j := range song[i]{
-					if(song[i][j].Position < 10){
+					if song[i][j].Position < 10 && !song[i][j].Pressed{
 						DrawDisk(song[i][j].Lane, song[i][j].Position)
 					}
 				}
 			}
 		}
+
 		rl.EndMode3D()
-
 		rl.DrawFPS(10,10)
-		if len(song) < currentChord {
-			rl.DrawText("GAME OVER", (screenWidth/2) - 120 , 20, 40, rl.White)
-		}
-
+		rl.DrawText(fmt.Sprintf("Score: %d", score), 10, 30, 20, rl.White)
 		rl.EndDrawing()
 	}
 
-	rl.CloseWindow()
+	*state = Menu
+}
+
+func MenuScreen(state *State) {
+	for !rl.WindowShouldClose() {
+		rl.BeginDrawing()
+		rl.ClearBackground(rl.SkyBlue)
+
+		rl.DrawText("Press W to play", 10, 10, 20, rl.White)
+		if rl.IsKeyDown(rl.KeyW) {
+			*state = Playing
+			break
+		}
+		
+		rl.EndDrawing()
+	}
 }

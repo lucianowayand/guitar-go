@@ -1,9 +1,24 @@
 package main
 
-import (
-	"guitar-go/game"
+type State int
+
+const (
+	Menu State = iota
+	Playing
+	Results
 )
 
 func main() {
-	game.Play("little-lamb.sg", 50)
+	Setup()
+
+	state := Menu
+	for {
+		if state == Menu {
+			MenuScreen(&state)
+		}
+		if state == Playing {
+			PlayingScreen("little-lamb.sg", 20, &state)
+		}
+
+	}
 }
