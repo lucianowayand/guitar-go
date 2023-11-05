@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"fmt"
-	"image/color"
 	"os"
 	"strconv"
 	"strings"
@@ -11,6 +10,9 @@ import (
 
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
+
+const screenHeight = 720
+const screenWidth = 1280
 
 func ReadSongFromFile(path string) [][]Note{
 	f, err := os.Open(fmt.Sprintf("songs/"+path))
@@ -47,74 +49,11 @@ func ReadSongFromFile(path string) [][]Note{
 	return notes
 }
 
-func DrawTracks(){
-	// Track
-	rl.DrawCube(rl.NewVector3(0,0,0), 5, 0.5, 20, rl.ColorFromNormalized(rl.NewVector4(0.35,0.35,0.35,1)))
-
-	// Lanes
-	rl.DrawCube(rl.NewVector3(-2.5,0.05,0), 0.05, 0.5, 20, rl.White)
-	rl.DrawCube(rl.NewVector3(-1.5,0.05,0), 0.05, 0.5, 20, rl.White)
-	rl.DrawCube(rl.NewVector3(-0.5,0.05,0), 0.05, 0.5, 20, rl.White)
-	rl.DrawCube(rl.NewVector3(0.5,0.05,0), 0.05, 0.5, 20, rl.White)
-	rl.DrawCube(rl.NewVector3(1.5,0.05,0), 0.05, 0.5, 20, rl.White)
-	rl.DrawCube(rl.NewVector3(2.5,0.05,0), 0.05, 0.5, 20, rl.White)
-}
-
-func DrawDisk(lane int, position float32){
-	// -10 - Disk spawn position
-	// 6 - Disk perfect position
-	// 10 - Disk destroy position
-
-	colors := []color.RGBA{rl.Green, rl.Red, rl.Yellow, rl.Blue, rl.Orange}
-	rl.DrawSphere(rl.NewVector3(float32(-2+lane),0.1,position), 0.4, colors[lane])
-}
-
-func DrawMarker(lane int, song [][]Note, score *int){
-	colors := []color.RGBA{rl.Green, rl.Red, rl.Yellow, rl.Blue, rl.Orange}
-	var color color.RGBA
-	
-	keys := []int32{rl.KeyQ, rl.KeyW, rl.KeyE, rl.KeyR, rl.KeyT}
-	height := 0.5
-
-	if rl.IsKeyDown(keys[lane]){
-		height = 0.6
-		color = colors[lane]
-		foundNote := false
-
-		if rl.IsKeyPressed(keys[lane]){
-			for i := range song{
-				for j := range song[i]{
-					if song[i][j].Position > 5.5 && song[i][j].Position < 6.5 && song[i][j].Lane == lane && !song[i][j].Pressed{
-						song[i][j].Pressed = true
-						*score += 1
-						foundNote = true
-					}
-				}
-			}
-			if !foundNote{
-				*score -= 1
-			}
-		}
-
-	} else {
-		height = 0.5
-		color = rl.DarkGray
-	}
-
-	rl.DrawCylinder(rl.NewVector3(float32(-2+lane),-0.25,6.5), 0.4, 0.4, 0.5, 12, rl.Gray)
-	rl.DrawCylinder(rl.NewVector3(float32(-2+lane),-0.2,6.5), 0.3, 0.3, float32(height), 12, color)
-}
-
-type Note struct {
-	Position float32
-	Lane int
-	Pressed bool
+func CenteredTextPosX(text string, fontSize int32) int32 {
+	return int32(screenWidth/2-(len(text)*int(fontSize/4)))
 }
 
 func Setup() {
-	screenWidth := int32(1280)
-	screenHeight := int32(720)
-
 	rl.InitWindow(screenWidth, screenHeight, "Guitar Go!")
 	rl.SetConfigFlags(rl.FlagMsaa4xHint) //ENABLE 4X MSAA IF AVAILABLE
 	rl.SetTargetFPS(60)
@@ -182,17 +121,111 @@ func PlayingScreen(songPath string, velocity time.Duration, state *State) {
 	*state = Menu
 }
 
+func BuildMenuOption(option string, index int32, optionName MenuOptions, selectedOption *MenuOptions) {
+	text := option
+	var fontSize int32 = 20
+	color := rl.White
+	if *selectedOption == optionName {
+		color = rl.Green
+	} 
+	rl.DrawText(text, CenteredTextPosX(text, fontSize), 300+(fontSize*index*2), fontSize, color)
+}
+
 func MenuScreen(state *State) {
+	selectedOption := Play
+
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
-		rl.ClearBackground(rl.SkyBlue)
+		rl.ClearBackground(rl.Gray)
 
-		rl.DrawText("Press W to play", 10, 10, 20, rl.White)
-		if rl.IsKeyDown(rl.KeyW) {
-			*state = Playing
-			break
-		}
+		title := "GUITAR GO!"
+		var fontSize int32 = 40
+		rl.DrawText(title, CenteredTextPosX(title, fontSize), 150, fontSize, rl.White)
 		
+		BuildMenuOption("Playlist", 0, Play, &selectedOption)
+		BuildMenuOption("Exit", 1, Exit, &selectedOption)
+
+		if rl.IsKeyPressed(rl.KeyDown) {
+			if selectedOption < Exit {
+				selectedOption++
+			} else {
+				selectedOption = 0
+			}
+		}
+		if rl.IsKeyPressed(rl.KeyUp) {
+			if selectedOption > 0 {
+				selectedOption--
+			} else {
+				selectedOption = Exit
+			}
+		}
+
+		if rl.IsKeyPressed(rl.KeyEnter) {
+			if selectedOption == Exit {
+				rl.CloseWindow()
+			} else if selectedOption == Play {
+				*state = Playlist
+				break
+			}
+		}
+		rl.EndDrawing()
+	}
+}
+
+func SongEntry(song string, index int32, selectedSong int32) {
+	text := song
+	var fontSize int32 = 20
+	color := rl.White
+	if selectedSong == index {
+		color = rl.Green
+	} 
+	rl.DrawText(text, CenteredTextPosX(text, fontSize), fontSize+fontSize*index*2, fontSize, color)
+}
+
+func PlaylistScreen(state *State, song *string){
+	playOnce := 0
+
+	entries, err := os.ReadDir("songs")
+	if err != nil {
+		fmt.Println(err)
+	}
+
+	var selectedSong int32 = 0
+	soungsCount := int32(len(entries)-1)
+
+	for !rl.WindowShouldClose() {
+		rl.BeginDrawing()
+		rl.ClearBackground(rl.Gray)
+
+		for index, file := range entries {
+			SongEntry(file.Name(), int32(index), selectedSong)
+		}
+
+		if rl.IsKeyPressed(rl.KeyDown) {
+			if selectedSong < soungsCount {
+				selectedSong++
+			} else {
+				selectedSong = 0
+			}
+		}
+		if rl.IsKeyPressed(rl.KeyUp) {
+			if selectedSong > 0 {
+				selectedSong--
+			} else {
+				selectedSong = soungsCount
+			}
+		}
+
+		if rl.IsKeyPressed(rl.KeyEnter) {
+			if playOnce == 0 {
+				playOnce++
+			} else {
+				*song = entries[selectedSong].Name()
+				*state = Playing
+				break
+			}
+		}
+	
 		rl.EndDrawing()
 	}
 }
