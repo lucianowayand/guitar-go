@@ -76,22 +76,24 @@ func DrawMarker(lane int, song [][]Note, score *int){
 	keys := []int32{rl.KeyQ, rl.KeyW, rl.KeyE, rl.KeyR, rl.KeyT}
 	height := 0.5
 
-	if rl.IsKeyPressed(keys[lane]){
+	if rl.IsKeyDown(keys[lane]){
 		height = 0.6
 		color = colors[lane]
 		foundNote := false
 
-		for i := range song{
-			for j := range song[i]{
-				if song[i][j].Position > 5.5 && song[i][j].Position < 6.5 && song[i][j].Lane == lane && !song[i][j].Pressed{
-					song[i][j].Pressed = true
-					*score += 1
-					foundNote = true
+		if rl.IsKeyPressed(keys[lane]){
+			for i := range song{
+				for j := range song[i]{
+					if song[i][j].Position > 5.5 && song[i][j].Position < 6.5 && song[i][j].Lane == lane && !song[i][j].Pressed{
+						song[i][j].Pressed = true
+						*score += 1
+						foundNote = true
+					}
 				}
 			}
-		}
-		if !foundNote{
-			*score -= 1
+			if !foundNote{
+				*score -= 1
+			}
 		}
 
 	} else {
