@@ -54,7 +54,7 @@ func main() {
 	camera.Up = rl.NewVector3(0, 1, 0)
 	camera.Fovy = 45
 
-	model := rl.LoadModel("./models/garrafa.obj")
+	model := rl.LoadModel("../models/garrafa.obj")
 
 	for !rl.WindowShouldClose() {
 		CameraMovement(&camera, 0.2)
