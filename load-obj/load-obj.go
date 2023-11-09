@@ -54,9 +54,13 @@ func main() {
 	camera.Up = rl.NewVector3(0, 1, 0)
 	camera.Fovy = 45
 
-	model := rl.LoadModel("../models/garrafa.glb")
-	//material := rl.LoadMaterials("../models/garrafa.mtl")
-	//logo := rl.LoadTexture("../models/tarken_logo.png")
+	model := rl.LoadModel("../models/garrafa.obj")
+	//material := rl.LoadMaterials("../models/garrafa.obj")
+	logo := rl.LoadTexture("../models/tarken_logo_paint.png")
+	//texture := rl.LoadTexture("../models/teste.png")
+	model.Materials.Maps.Texture = logo
+	
+	
 	for !rl.WindowShouldClose() {
 		CameraMovement(&camera, 0.2)
 
@@ -69,7 +73,8 @@ func main() {
 		//rl.LoadMaterials("../models/garrafa.mtl")
 		//rl.LoadModel("../models/garrafa.glb")
 		//rl.DrawTexture(logo, 2, 2, rl.White)
-		rl.DrawModel(model, rl.NewVector3(0, 0, 0), 3, rl.White)
+		//rl.SetMaterialTexture(&material[0], 1, texture)
+		rl.DrawModel(model, rl.NewVector3(0, 0, 0), 1, rl.White)
 
 		rl.DrawGrid(10, 1.0) // Draw a grid
 		rl.EndMode3D()
