@@ -50,33 +50,41 @@ func main() {
 	rl.SetTargetFPS(60)
 
 	camera := rl.Camera{}
-	camera.Position = rl.NewVector3(0,7,12)
+	camera.Position = rl.NewVector3(15,7,17)
 	camera.Up = rl.NewVector3(0, 1, 0)
 	camera.Fovy = 45
 
-	model := rl.LoadModel("../models/garrafa1.obj")
-	//logo := rl.LoadTexture("../models/tarken_logo_paint.png")
-	logo := rl.LoadTexture("../models/madeira.png")
-	model.Materials.Maps.Texture = logo
+	// model := rl.LoadModel("../models/garrafa1.obj")
+	// logo := rl.LoadTexture("../models/madeira.png")
+	// model.Materials.Maps.Texture = logo
 
+	terra := rl.LoadModel("../models/bola.obj")
+	terra_text := rl.LoadTexture("../models/MAPA-DO-MUNDO.jpg")
+	terra.Materials.Maps.Texture = terra_text
+
+	lua := rl.LoadModel("../models/bola-peq.obj")
+	lua_text := rl.LoadTexture("../models/lua.jpg")
+	lua.Materials.Maps.Texture = lua_text
 	
 	for !rl.WindowShouldClose() {
 		CameraMovement(&camera, 0.2)
 
 		rl.BeginDrawing()
 
-		rl.ClearBackground(rl.Gray)
+		rl.ClearBackground(rl.Black)
 
 		rl.BeginMode3D(camera)
 
-		rl.DrawModel(model, rl.NewVector3(0, 0, 0), 1, rl.White)
+		rl.DrawModel(terra, rl.NewVector3(0, 0, 0), 1, rl.White)
+		rl.DrawModel(lua, rl.NewVector3(0, 0, 0), 1, rl.White)
 
-		rl.DrawGrid(10, 1.0) // Draw a grid
+		// rl.DrawGrid(10, 1.0)
 		rl.EndMode3D()
 		rl.DrawText(fmt.Sprintf("[%.2f, %.2f, %.2f]", camera.Position.X, camera.Position.Y, camera.Position.Z), 10, 20, 20, rl.Black)
 		rl.EndDrawing()
 	}
 
-	rl.UnloadModel(model)  // Unload model
+	rl.UnloadModel(terra)
+	rl.UnloadModel(lua)
 	rl.CloseWindow()
 }
