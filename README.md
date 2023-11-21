@@ -10,4 +10,4 @@ Guitar Hero clone made with OpenGL and the raylib-go helper. It creates music wi
 
 ## How to run
 
-If you have everything installed got to the root of the project and run `go run .`
+If you have everything installed go to the root of the project and run `go run .`
