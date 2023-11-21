@@ -57,7 +57,7 @@ func CenteredTextPosX(text string, fontSize int32) int32 {
 func Setup() {
 	rl.InitWindow(screenWidth, screenHeight, "Guitar Go!")
 	rl.InitAudioDevice()
-	rl.SetConfigFlags(rl.FlagMsaa4xHint) //ENABLE 4X MSAA IF AVAILABLE
+	rl.SetConfigFlags(rl.FlagMsaa4xHint) //ENABLE 4X MSAA IF AVAILABLE CONFLICT
 	rl.SetTargetFPS(60)
 }
 
