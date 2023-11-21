@@ -47,11 +47,13 @@ func DrawMarker(lane int, song [][]Note, score *int) {
 						song[i][j].Pressed = true
 						*score += 1
 						foundNote = true
+						PlaySound(notes[lane], "4")
 					}
 				}
 			}
 			if !foundNote {
 				*score -= 1
+				PlaySound(notes[lane], "1")
 			}
 		}
 
