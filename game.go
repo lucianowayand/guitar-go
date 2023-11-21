@@ -13,6 +13,7 @@ import (
 
 const screenHeight = 720
 const screenWidth = 1280
+var notes = []string{"C", "D", "E", "F", "G"}
 
 func ReadSongFromFile(path string) [][]Note{
 	f, err := os.Open(fmt.Sprintf("songs/"+path))
@@ -55,6 +56,7 @@ func CenteredTextPosX(text string, fontSize int32) int32 {
 
 func Setup() {
 	rl.InitWindow(screenWidth, screenHeight, "Guitar Go!")
+	rl.InitAudioDevice()
 	rl.SetConfigFlags(rl.FlagMsaa4xHint) //ENABLE 4X MSAA IF AVAILABLE
 	rl.SetTargetFPS(60)
 }
@@ -228,4 +230,10 @@ func PlaylistScreen(state *State, song *string){
 	
 		rl.EndDrawing()
 	}
+}
+
+func PlaySound(note string, scale string){
+	fmt.Print("Starting sound\n")
+	sound := rl.LoadSound(fmt.Sprintf("notes/%s%s.mp3", note, scale))
+	rl.PlaySound(sound)
 }
