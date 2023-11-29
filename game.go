@@ -55,7 +55,7 @@ func CenteredTextPosX(text string, fontSize int32) int32 {
 }
 
 func Setup() {
-	rl.InitWindow(screenWidth, screenHeight, "Guitar Go!")
+	rl.InitWindow(screenWidth, screenHeight, "Piano Hero!")
 	rl.InitAudioDevice()
 	rl.SetConfigFlags(rl.FlagMsaa4xHint) //ENABLE 4X MSAA
 	rl.SetTargetFPS(60)
@@ -63,6 +63,7 @@ func Setup() {
 
 func PlayingScreen(songPath string, velocity time.Duration, state *State) {
 	score := 0
+	var barrinha float32 = -6.0
 
 	camera := rl.Camera{}
 	camera.Position = rl.NewVector3(0,7,12)
@@ -91,18 +92,19 @@ func PlayingScreen(songPath string, velocity time.Duration, state *State) {
 			currentChord += 1
 		}
 	}()
-
+	
 	for !rl.WindowShouldClose() {
 		rl.BeginDrawing()
 		rl.BeginMode3D(camera)
 		rl.ClearBackground(rl.SkyBlue)
 
 		DrawTracks()
-		DrawMarker(0, song, &score)
-		DrawMarker(1, song, &score)
-		DrawMarker(2, song, &score)
-		DrawMarker(3, song, &score)
-		DrawMarker(4, song, &score)
+		DrawMeter(barrinha)
+		DrawMarker(0, song, &score, &barrinha)
+		DrawMarker(1, song, &score, &barrinha)
+		DrawMarker(2, song, &score, &barrinha)
+		DrawMarker(3, song, &score, &barrinha)
+		DrawMarker(4, song, &score, &barrinha)
 
 		for i := range song{
 			if i < currentChord{
@@ -235,5 +237,10 @@ func PlaylistScreen(state *State, song *string){
 func PlaySound(note string, scale string){
 	fmt.Print("Starting sound\n")
 	sound := rl.LoadSound(fmt.Sprintf("notes/%s%s.mp3", note, scale))
+	rl.PlaySound(sound)
+}
+
+func PlayWrongNote(){
+	sound := rl.LoadSound(fmt.Sprintf("notes/quack_5"))
 	rl.PlaySound(sound)
 }
