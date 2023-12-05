@@ -54,6 +54,10 @@ func CenteredTextPosX(text string, fontSize int32) int32 {
 	return int32(screenWidth/2-(len(text)*int(fontSize/4)))
 }
 
+func CenteredTextPosY(text string, fontSize int32) int32 {
+	return int32((screenHeight/2)-fontSize)
+}
+
 func Setup() {
 	rl.InitWindow(screenWidth, screenHeight, "Piano Hero!")
 	rl.InitAudioDevice()
@@ -118,11 +122,20 @@ func PlayingScreen(songPath string, velocity time.Duration, state *State) {
 
 		rl.EndMode3D()
 		rl.DrawFPS(10,10)
-		rl.DrawText(fmt.Sprintf("Score: %d", score), 10, 30, 20, rl.White)
+		
+		visibleScore := score
+		if score < 0 {
+			visibleScore = 0
+		}
+
+		if score < -14 {
+			*state = GameOver
+			break
+		}
+
+		rl.DrawText(fmt.Sprintf("Score: %d", visibleScore), 10, 30, 20, rl.White)
 		rl.EndDrawing()
 	}
-
-	*state = Menu
 }
 
 func BuildMenuOption(option string, index int32, optionName MenuOptions, selectedOption *MenuOptions) {
@@ -229,7 +242,30 @@ func PlaylistScreen(state *State, song *string){
 				break
 			}
 		}
+
+		if rl.IsKeyPressed(rl.KeyEscape) {
+			*state = Menu
+			break
+		}
 	
+		rl.EndDrawing()
+	}
+}
+
+func GameOverScreen(state *State) {
+	for !rl.WindowShouldClose() {
+		rl.BeginDrawing()
+		rl.ClearBackground(rl.Gray)
+
+		text := "Game Over"
+		fontSize := 72
+		rl.DrawText(text, CenteredTextPosX(text, int32(fontSize)), CenteredTextPosY(text, int32(fontSize)), int32(fontSize), rl.White)
+
+		if rl.IsKeyPressed(rl.KeyEscape) {
+			*state = Menu
+			break
+		}
+
 		rl.EndDrawing()
 	}
 }

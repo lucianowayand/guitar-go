@@ -15,5 +15,9 @@ func main() {
 		if state == Playing {
 			PlayingScreen(song, 30, &state)
 		}
+
+		if state == GameOver {
+			GameOverScreen(&state)
+		}
 	}
 }

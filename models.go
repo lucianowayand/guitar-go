@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"image/color"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -82,6 +81,7 @@ func DrawMarker(lane int, song [][]Note, score *int, barrinha *float32) {
 				}
 			}
 			if !foundNote {
+				*score -= 1
 				if *barrinha > -7.3 {
 					*barrinha -= 0.1
 				}

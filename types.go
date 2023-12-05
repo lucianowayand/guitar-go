@@ -13,6 +13,7 @@ const (
 	Playlist
 	Playing
 	Results
+	GameOver
 )
 
 type MenuOptions int
