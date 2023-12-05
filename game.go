@@ -55,7 +55,7 @@ func CenteredTextPosX(text string, fontSize int32) int32 {
 }
 
 func Setup() {
-	rl.InitWindow(screenWidth, screenHeight, "Guitar Go!")
+	rl.InitWindow(screenWidth, screenHeight, "Piano Hero!")
 	rl.InitAudioDevice()
 	rl.SetConfigFlags(rl.FlagMsaa4xHint) //ENABLE 4X MSAA IF AVAILABLE CONFLICT
 	rl.SetTargetFPS(60)
@@ -140,7 +140,7 @@ func MenuScreen(state *State) {
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.Gray)
 
-		title := "GUITAR GO!"
+		title := "PIANO HERO!"
 		var fontSize int32 = 40
 		rl.DrawText(title, CenteredTextPosX(title, fontSize), 150, fontSize, rl.White)
 		

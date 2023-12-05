@@ -32,7 +32,7 @@ func DrawMarker(lane int, song [][]Note, score *int) {
 	colors := []color.RGBA{rl.Green, rl.Red, rl.Yellow, rl.Blue, rl.Orange}
 	var color color.RGBA
 
-	keys := []int32{rl.KeyQ, rl.KeyW, rl.KeyE, rl.KeyR, rl.KeyT}
+	keys := []int32{rl.KeyA, rl.KeyS, rl.KeyJ, rl.KeyK, rl.KeyL}
 	height := 0.5
 
 	if rl.IsKeyDown(keys[lane]) {
