@@ -237,10 +237,12 @@ func PlaylistScreen(state *State, song *string){
 func PlaySound(note string, scale string){
 	fmt.Print("Starting sound\n")
 	sound := rl.LoadSound(fmt.Sprintf("notes/%s%s.mp3", note, scale))
+	rl.SetSoundVolume(sound, 1)
 	rl.PlaySound(sound)
 }
 
 func PlayWrongNote(){
-	sound := rl.LoadSound(fmt.Sprintf("notes/quack_5"))
+	sound := rl.LoadSound("notes/quack_5.mp3")
+	rl.SetSoundVolume(sound, 0.2)
 	rl.PlaySound(sound)
 }

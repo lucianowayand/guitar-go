@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"image/color"
 
 	rl "github.com/gen2brain/raylib-go/raylib"
@@ -72,15 +73,18 @@ func DrawMarker(lane int, song [][]Note, score *int, barrinha *float32) {
 					if song[i][j].Position > 5.5 && song[i][j].Position < 6.5 && song[i][j].Lane == lane && !song[i][j].Pressed {
 						song[i][j].Pressed = true
 						*score += 1
-						*barrinha += 0.1
+						if *barrinha < -4.6 {
+							*barrinha += 0.1
+						}
 						foundNote = true
 						PlaySound(notes[lane], "4")
 					}
 				}
 			}
 			if !foundNote {
-				*barrinha -= 0.1
-				
+				if *barrinha > -7.3 {
+					*barrinha -= 0.1
+				}
 				PlayWrongNote()
 			}
 		}
