@@ -121,6 +121,16 @@ func PlayingScreen(songPath string, velocity time.Duration, state *State) {
 					if song[i][j].Position < 10 && !song[i][j].Pressed{
 						DrawDisk(song[i][j].Lane, song[i][j].Position)
 					}
+					if song[i][j].Position > 7 && !song[i][j].Pressed{
+						song[i][j].Pressed = true
+						PlayWrongNote()
+
+						fmt.Println("Wrong note")
+						score -= 1
+						if barrinha > -7.3 {
+							barrinha -= 0.1
+						}
+					}
 				}
 			}
 		}
@@ -143,6 +153,11 @@ func PlayingScreen(songPath string, velocity time.Duration, state *State) {
 
 		if score < -14 {
 			*state = GameOver
+			break
+		}
+
+		if len(song)+20 == currentChord {
+			*state = Menu
 			break
 		}
 
