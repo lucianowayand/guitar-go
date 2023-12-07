@@ -53,20 +53,20 @@ func DrawDisk(lane int, position float32) {
 	rl.DrawSphere(rl.NewVector3(float32(-2+lane), 0.1, position), 0.4, colors[lane])
 }
 
-func DrawMarker(lane int, song [][]Note, score *int, barrinha *float32) {
+func DrawMarker(lane int, song [][]Note, score *int, barrinha *float32, paused *bool) {
 	colors := []color.RGBA{rl.Green, rl.Red, rl.Yellow, rl.Blue, rl.Orange}
 	var color color.RGBA
 
 	keys := []int32{rl.KeyA, rl.KeyS, rl.KeyJ, rl.KeyK, rl.KeyL}
 	height := 0.5
 
-	if rl.IsKeyDown(keys[lane]) {
+	if rl.IsKeyDown(keys[lane]) && !*paused {
 		height = 0.6
 		color = colors[lane]
 		foundNote := false
 		
 
-		if rl.IsKeyPressed(keys[lane]) {
+		if rl.IsKeyPressed(keys[lane]){
 			for i := range song {
 				for j := range song[i] {
 					if song[i][j].Position > 5.5 && song[i][j].Position < 6.5 && song[i][j].Lane == lane && !song[i][j].Pressed {

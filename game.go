@@ -67,6 +67,7 @@ func Setup() {
 
 func PlayingScreen(songPath string, velocity time.Duration, state *State) {
 	score := 0
+	pause := false
 	var barrinha float32 = -6.0
 
 	camera := rl.Camera{}
@@ -83,7 +84,9 @@ func PlayingScreen(songPath string, velocity time.Duration, state *State) {
 			for i := range song{
 				for j := range song[i]{
 					if i < currentChord{
-						song[i][j].Position += 0.1
+						if !pause {
+							song[i][j].Position += 0.1
+						}
 					}
 				}
 			}
@@ -93,7 +96,9 @@ func PlayingScreen(songPath string, velocity time.Duration, state *State) {
 	timer := time.NewTicker(10*velocity * time.Millisecond)
 	go func() {
 		for range timer.C {
-			currentChord += 1
+			if !pause {
+				currentChord += 1
+			}
 		}
 	}()
 	
@@ -104,11 +109,11 @@ func PlayingScreen(songPath string, velocity time.Duration, state *State) {
 
 		DrawTracks()
 		DrawMeter(barrinha)
-		DrawMarker(0, song, &score, &barrinha)
-		DrawMarker(1, song, &score, &barrinha)
-		DrawMarker(2, song, &score, &barrinha)
-		DrawMarker(3, song, &score, &barrinha)
-		DrawMarker(4, song, &score, &barrinha)
+		DrawMarker(0, song, &score, &barrinha, &pause)
+		DrawMarker(1, song, &score, &barrinha, &pause)
+		DrawMarker(2, song, &score, &barrinha, &pause)
+		DrawMarker(3, song, &score, &barrinha, &pause)
+		DrawMarker(4, song, &score, &barrinha, &pause)
 
 		for i := range song{
 			if i < currentChord{
@@ -120,12 +125,20 @@ func PlayingScreen(songPath string, velocity time.Duration, state *State) {
 			}
 		}
 
+		if rl.IsKeyPressed(rl.KeyP) {
+			pause = !pause
+		}
+
 		rl.EndMode3D()
 		rl.DrawFPS(10,10)
 		
 		visibleScore := score
 		if score < 0 {
 			visibleScore = 0
+		}
+		
+		if pause {
+			rl.DrawText("Paused", CenteredTextPosX("Paused", 48), CenteredTextPosY("Paused", 48) - 50, 48, rl.Yellow)
 		}
 
 		if score < -14 {
